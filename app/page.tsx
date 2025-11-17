@@ -15,9 +15,6 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold">
             Olá, {user?.email?.split("@")[0] || "Professor"}!
           </h1>
-          <Button variant="outline" onClick={() => auth.signOut()}>
-            Sair
-          </Button>
         </div>
 
         <p>Bem-vindo ao seu painel de geração de atividades.</p>
@@ -27,7 +24,7 @@ export default function DashboardPage() {
             <Link href="/create">Criar Nova Atividade</Link>
           </Button>
           <Button asChild size="lg" variant="secondary">
-            <Link href="/historico">Ver Histórico</Link>
+            <Link href="/history">Ver Histórico</Link>
           </Button>
         </div>
       </div>

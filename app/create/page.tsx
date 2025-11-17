@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function CreateActivityPage() {
   const [level, setLevel] = useState("");
@@ -24,6 +26,7 @@ export default function CreateActivityPage() {
   const { setLoading, setActivity } = useActivityStore();
   const isLoading = useActivityStore((state) => state.isLoading);
   const router = useRouter();
+  const { user } = useAuth();
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,13 +37,23 @@ export default function CreateActivityPage() {
       return;
     }
 
+    if (!user) {
+      toast.error("Erro de Autenticação", {
+        description: "Usuário não encontrado. Tente fazer login novamente.",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
+      const token = await user.getIdToken();
+
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           level,
@@ -120,6 +133,7 @@ export default function CreateActivityPage() {
             disabled={isLoading}
             size="lg"
           >
+            {isLoading ? <LoadingSpinner className="mr-2 h-4 w-4" /> : null}
             {isLoading ? "Gerando... (Pode levar 30s)" : "Gerar Atividade"}
           </Button>
         </form>

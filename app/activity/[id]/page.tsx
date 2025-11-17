@@ -43,11 +43,11 @@ export default function ActivityResultPage() {
             setLocalActivity(data);
             setActivity(data);
           } else {
-            router.push("/historico");
+            router.push("/history");
           }
         } catch (error) {
           console.error("Erro ao buscar atividade:", error);
-          router.push("/historico");
+          router.push("/history");
         } finally {
           setLoading(false);
         }

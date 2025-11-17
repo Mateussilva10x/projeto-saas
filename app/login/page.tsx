@@ -1,6 +1,6 @@
 "use client";
 import { SetStateAction, useState } from "react";
-import { auth } from "@/lib/firebase";
+import { auth, googleProvider, signInWithPopup } from "@/lib/firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -32,6 +32,18 @@ export default function LoginPage() {
     } catch (error: any) {
       toast.error("Erro", {
         description: error.message || "Verifique suas credenciais.",
+      });
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      toast.success("Login com Google realizado com sucesso!");
+      router.push("/");
+    } catch (error: any) {
+      toast.error("Erro no Login com Google", {
+        description: error.message,
       });
     }
   };
@@ -70,6 +82,18 @@ export default function LoginPage() {
           {isLogin ? "Entrar" : "Registrar"}
         </Button>
       </form>
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">OU</span>
+        </div>
+      </div>
+
+      <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
+        Logar com Google
+      </Button>
       <Button
         variant="link"
         className="w-full mt-4"

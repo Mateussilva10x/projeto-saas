@@ -2,6 +2,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -14,7 +15,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   }, [user, loading, router]);
 
   if (loading || !user) {
-    return <div>Carregando...</div>;
+    return <LoadingSpinner className="h-12 w-12" />;
   }
 
   return <>{children}</>;
