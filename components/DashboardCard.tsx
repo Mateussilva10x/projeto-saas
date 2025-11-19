@@ -33,8 +33,8 @@ export default function DashboardCard({
 
   return (
     <div className="flex flex-col gap-4 p-6 bg-white dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800 transition-shadow hover:shadow-lg dark:hover:border-primary">
-      <div className="flex items-center justify-center size-12 rounded-lg bg-primary/10 text-primary">
-        <Icon className="w-6 h-6" />
+      <div className="flex items-center justify-center size-12 rounded-lg bg-primary/20 text-primary">
+        <Icon className="w-7 h-7" />
       </div>
       <div className="flex flex-col gap-2">
         <h3 className="text-slate-900 dark:text-white text-lg font-medium leading-normal">

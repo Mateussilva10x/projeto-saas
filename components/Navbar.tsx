@@ -53,7 +53,7 @@ export default function Navbar() {
               variant="outline"
               size="sm"
               onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2  text-sm font-medium rounded-lg hover:bg-slate-700 hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-700/50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 cursor-pointer text-sm font-medium rounded-lg dark:hover:bg-slate-700 dark:hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-700/50 transition-colors"
             >
               <LogOut className="size-4" />
               Sair
