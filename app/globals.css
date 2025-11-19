@@ -1,3 +1,4 @@
+/* app/globals.css */
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -45,75 +46,123 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
+  --background: #f6f7f8;
+  --foreground: oklch(0.15 0.005 250);
+
+  --card: var(--background);
+  --card-foreground: var(--foreground);
+  --popover: var(--background);
+  --popover-foreground: var(--foreground);
+
+  --primary: #137fec;
+  --primary-foreground: oklch(0.98 0 0);
+
+  --secondary: #64748b;
+  --secondary-foreground: oklch(0.3 0 0);
+
+  --muted: oklch(0.94 0.005 250);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --accent: oklch(0.95 0.01 250);
+  --accent-foreground: oklch(0.3 0 0);
+
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  --border: oklch(0.9 0.005 250);
+  --input: oklch(0.9 0.005 250);
+  --ring: oklch(0.5 0.16 260);
+
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+
+  --text-color: #1e293b;
+  --success-color: #22c55e;
+  --error-color: #ef4444;
+  --warning-color: #f97316;
+
+  --h1-size: 2.25rem;
+  --h1-weight: 900;
+  --h1-color: #1e293b;
+  --body-size: 1rem;
+  --body-weight: 400;
+  --body-color: #334155;
+  --caption-size: 0.875rem;
+  --caption-weight: 400;
+  --caption-color: #64748b;
+
+  --padding-sm: 8px;
+  --padding-md: 16px;
+  --padding-lg: 24px;
+  --padding-xl: 32px;
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
+  /* DARK MODE (Azul Escuro/Preto) */
+  --background: #020617; /* Fundo Azul Escuro Profundo */
+  --foreground: oklch(0.95 0 0); /* Texto Off-White */
 
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
+  --card: oklch(0.12 0.01 260); /* Card ligeiramente mais claro que o fundo */
+  --card-foreground: var(--foreground);
+  --popover: oklch(0.12 0.01 260);
+  --popover-foreground: var(--foreground);
 
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
+  /* PRIMARY: Azul Safira Luminoso (Alto Contraste) */
+  --primary: #38bdf8;
+  --primary-foreground: oklch(0.15 0.005 250); /* Texto no Primary escuro */
 
-  --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.4% 11.2%;
+  /* SECONDARY: Cinza Grafite Profundo */
+  --secondary: #94a3b8;
+  --secondary-foreground: var(--foreground);
 
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
+  --muted: oklch(0.2 0.01 260);
+  --muted-foreground: oklch(0.5 0 0); /* Cinza médio */
+  --accent: oklch(0.2 0.01 260);
+  --accent-foreground: var(--foreground);
 
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: var(--foreground);
 
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
+  /* BORDERS / RINGS */
+  --border: oklch(0.2 0.01 260);
+  --input: oklch(0.2 0.01 260);
+  --ring: oklch(0.6 0.18 260); /* Focus Ring na cor Primary Luminosa */
 
   --radius: 0.5rem;
+
+  --text-color: #f1f5f9;
+  --success-color: #4ade80;
+  --error-color: #f87171;
+  --warning-color: #fb923c;
+
+  --h1-size: 2.25rem;
+  --h1-weight: 900;
+  --h1-color: #f1f5f9;
+  --body-size: 1rem;
+  --body-weight: 400;
+  --body-color: #cbd5e1;
+  --caption-size: 0.875rem;
+  --caption-weight: 400;
+  --caption-color: #94a3b8;
+
+  --padding-sm: 8px;
+  --padding-md: 16px;
+  --padding-lg: 24px;
+  --padding-xl: 32px;
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
   body {
     @apply bg-background text-foreground;
   }

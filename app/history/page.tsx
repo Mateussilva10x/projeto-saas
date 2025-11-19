@@ -87,7 +87,7 @@ export default function HistoryPage() {
             Comece a criar sua primeira atividade agora mesmo.
           </p>
           <Button asChild className="mt-4">
-            <Link href="/criar">
+            <Link href="/create">
               <PlusCircle className="mr-2 h-4 w-4" />
               Criar Atividade
             </Link>
