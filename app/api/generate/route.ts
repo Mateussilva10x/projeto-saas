@@ -5,7 +5,12 @@ import { geminiModel } from "@/lib/gemini";
 import { ActivityData } from "@/store/useActivityStore";
 import { Timestamp } from "firebase-admin/firestore";
 
-const buildPrompt = (level: string, type: string, topics: string[]): string => {
+const buildPrompt = (
+  level: string,
+  series: string,
+  type: string,
+  topics: string[]
+): string => {
   const topicsList = topics.join(", ");
   const numQuestions = type === "Prova" ? 10 : type === "Simulado" ? 20 : 5;
   const mcCount = Math.floor(numQuestions * 0.6);
@@ -15,10 +20,10 @@ const buildPrompt = (level: string, type: string, topics: string[]): string => {
     Você é um assistente pedagógico especializado em criar avaliações e atividades
     para o sistema educacional brasileiro, seguindo as diretrizes da BNCC.
 
-    Sua tarefa é gerar um documento JSON para uma ${type} destinada a alunos do ${level}.
+    Sua tarefa é gerar um documento JSON para uma ${type} destinada a alunos do ${series} do ${level}.
 
     Regras Estritas de Geração:
-    1.  Nível de Dificuldade: Ajuste a complexidade e a linguagem para ${level}.
+    1.  Nível de Dificuldade: Ajuste a complexidade e a linguagem para a **Série ${series} (${level})**.
     2.  Temas: A ${type} deve cobrir **exclusivamente** os seguintes temas: ${topicsList}.
     3.  Total de Questões: Gere exatamente ${numQuestions} questões.
     4.  Tipos de Questão:
@@ -72,12 +77,15 @@ export async function POST(request: Request) {
     const decodedToken = await authAdmin.verifyIdToken(token);
     const userId = decodedToken.uid;
 
-    const { level, type, topics } = await request.json();
-    if (!level || !type || !topics) {
-      return NextResponse.json({ message: "Campos faltando" }, { status: 400 });
+    const { level, series, type, topics } = await request.json();
+    if (!level || !series || !type || !topics || topics.length === 0) {
+      return NextResponse.json(
+        { message: "Campos faltando: nível, série, tipo ou temas." },
+        { status: 400 }
+      );
     }
 
-    const prompt = buildPrompt(level, type, topics);
+    const prompt = buildPrompt(level, series, type, topics);
     const result = await geminiModel.generateContent(prompt);
     const responseText = result.response.text();
 
@@ -92,6 +100,7 @@ export async function POST(request: Request) {
     const activityToSave: Omit<ActivityData, "id"> = {
       ...generatedData,
       level,
+      series,
       type,
       topics,
       createdAt: Timestamp.now(),
