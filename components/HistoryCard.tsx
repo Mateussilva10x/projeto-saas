@@ -10,26 +10,24 @@ const tagColors = {
   Médio: { bg: "bg-yellow-900/50", text: "text-yellow-300" },
   Difícil: { bg: "bg-red-900/50", text: "text-red-300" },
   Fácil: { bg: "bg-green-900/50", text: "text-green-300" },
+
+  "N/A": { bg: "bg-gray-700/50", text: "text-gray-400" },
+  "Fundamental 1": { bg: "bg-yellow-900/50", text: "text-yellow-300" },
+  "Fundamental 2": { bg: "bg-yellow-900/50", text: "text-yellow-300" },
+  "Ensino Médio": { bg: "bg-yellow-900/50", text: "text-yellow-300" },
 };
 
 interface HistoryCardProps {
   id: string;
   title: string;
-  type: "Prova" | "Simulado" | "Exercício";
+  type: string;
   level: string;
   createdAt: string;
 }
 
-const Tag = ({ type, value }: { type: "type" | "level"; value: string }) => {
-  const valueMap =
-    type === "type"
-      ? tagColors[value as keyof typeof tagColors]
-      : tagColors[value as keyof typeof tagColors] || tagColors.Médio;
-
-  const { bg, text } = valueMap || {
-    bg: "bg-slate-900/50",
-    text: "text-slate-300",
-  };
+const Tag = ({ value }: { value: string }) => {
+  const { bg, text } =
+    tagColors[value as keyof typeof tagColors] || tagColors["N/A"];
 
   return (
     <span
@@ -58,9 +56,9 @@ export default function HistoryCard({
       <div className="flex-1">
         <h3 className="text-lg font-bold text-gray-100">{title}</h3>
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <Tag type="type" value={type} />
+          <Tag value={type} />
 
-          <Tag type="level" value={level} />
+          <Tag value={level} />
 
           <p className="text-sm text-gray-400">Criado em: {date}</p>
         </div>

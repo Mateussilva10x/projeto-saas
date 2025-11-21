@@ -13,6 +13,7 @@ export interface ActivityAnswer {
 }
 
 export interface ActivityData {
+  series: string;
   id: string;
   title: string;
   level: string;

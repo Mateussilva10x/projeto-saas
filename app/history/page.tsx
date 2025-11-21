@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import AuthGuard from "@/components/AuthGuard";
 import { db } from "@/lib/firebase";
@@ -19,26 +19,89 @@ import {
   Search,
   PlusCircle,
   ChevronDown,
-  ArrowUpDown,
+  ChevronUp,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type FetchedActivity = Omit<ActivityData, "createdAt"> & {
   createdAt: Timestamp;
 };
 
-const TOTAL_RESULTS = 15;
-const PAGE_SIZE = 3;
-const TOTAL_PAGES = Math.ceil(TOTAL_RESULTS / PAGE_SIZE);
+const PAGE_SIZE = 10;
+const DOCUMENT_TYPES = ["Todos", "Prova", "Simulado", "Atividade"];
+
+const DIFFICULTY_LEVELS = [
+  "Todos",
+  "Fundamental 1",
+  "Fundamental 2",
+  "Ensino Médio",
+  "6º Ano",
+  "7º Ano",
+  "8º Ano",
+  "9º Ano",
+];
+
+interface FilterDropdownProps {
+  title: string;
+  options: string[];
+  filterState: string;
+  setFilterState: (state: string) => void;
+}
+
+const FilterDropdown: React.FC<FilterDropdownProps> = ({
+  title,
+  options,
+  filterState,
+  setFilterState,
+}) => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          className="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-700 bg-gray-800 px-3 text-sm font-medium text-gray-300 hover:bg-gray-700"
+        >
+          <span>{filterState !== "Todos" ? filterState : title}</span>
+          <ChevronDown className="w-4 h-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start"
+        className="bg-gray-800 border-gray-700"
+      >
+        {options.map((option) => (
+          <DropdownMenuItem
+            key={option}
+            onClick={() => setFilterState(option)}
+            className={`cursor-pointer ${
+              filterState === option ? "bg-primary/20 text-primary" : ""
+            }`}
+          >
+            {option}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 export default function HistoryPage() {
   const { user } = useAuth();
-  const [activities, setActivities] = useState<ActivityData[]>([]);
+  const [allActivities, setAllActivities] = useState<ActivityData[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState("Todos");
+  const [filterLevel, setFilterLevel] = useState("Todos");
+  const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
   useEffect(() => {
     if (user) {
@@ -55,26 +118,137 @@ export default function HistoryPage() {
 
         const fetchedActivities = querySnapshot.docs.map((doc) => {
           const data = doc.data() as FetchedActivity;
+
+          const levelTag = data.series || data.level || "N/A";
           return {
             ...data,
             id: doc.id,
+            level: levelTag,
             createdAt: data.createdAt.toDate().toISOString(),
-          };
+          } as ActivityData;
         });
 
-        const filtered = fetchedActivities
-          .filter((a) =>
-            a.title.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-          .slice(0, PAGE_SIZE);
-
-        setActivities(filtered);
+        setAllActivities(fetchedActivities);
         setLoading(false);
       };
 
       fetchHistory();
     }
-  }, [user, searchTerm]);
+  }, [user]);
+
+  const filteredAndSortedActivities = useMemo(() => {
+    let result = allActivities;
+
+    if (searchTerm) {
+      result = result.filter((a) =>
+        a.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (filterType !== "Todos") {
+      result = result.filter((a) => a.type === filterType);
+    }
+
+    if (filterLevel !== "Todos") {
+      result = result.filter((a) => a.level === filterLevel);
+    }
+
+    result = result.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+    });
+
+    if (
+      currentPage !== 1 &&
+      result.length > 0 &&
+      currentPage > Math.ceil(result.length / PAGE_SIZE)
+    ) {
+      setCurrentPage(1);
+    }
+
+    return result;
+  }, [
+    allActivities,
+    searchTerm,
+    filterType,
+    filterLevel,
+    sortOrder,
+    currentPage,
+  ]);
+
+  const totalActivities = filteredAndSortedActivities.length;
+  const totalPages = Math.ceil(totalActivities / PAGE_SIZE);
+
+  const paginatedActivities = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    return filteredAndSortedActivities.slice(start, end);
+  }, [filteredAndSortedActivities, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const renderPaginationButtons = () => {
+    const pages = [];
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      let start = Math.max(2, currentPage - 1);
+      let end = Math.min(totalPages - 1, currentPage + 1);
+
+      if (currentPage < 3) {
+        end = 4;
+      } else if (currentPage > totalPages - 2) {
+        start = totalPages - 3;
+      }
+
+      pages.push(1);
+      if (start > 2) pages.push("...");
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      if (end < totalPages - 1) pages.push("...");
+      if (totalPages > 1) pages.push(totalPages);
+    }
+
+    return pages
+      .filter((value, index, self) => {
+        return self.indexOf(value) === index;
+      })
+      .map((page, index) => {
+        if (page === "...") {
+          return (
+            <span key={index} className="text-gray-500">
+              ...
+            </span>
+          );
+        }
+
+        const isCurrent = page === currentPage;
+
+        return (
+          <Button
+            key={index}
+            onClick={() => handlePageChange(page as number)}
+            className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium ${
+              isCurrent
+                ? "border-primary bg-primary text-white font-bold"
+                : "border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700"
+            }`}
+          >
+            {page}
+          </Button>
+        );
+      });
+  };
 
   if (loading) {
     return (
@@ -89,12 +263,11 @@ export default function HistoryPage() {
   return (
     <AuthGuard>
       <div className="container mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
-        {/* Cabeçalho da Página (Igual ao Design) */}
         <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center mb-8">
           <h2 className="text-3xl font-black tracking-tight text-gray-100 dark:text-gray-100">
             Meu Histórico de Atividades
           </h2>
-          <Link href="/criar">
+          <Link href="/create">
             <Button className="flex min-w-[84px] items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-primary/90">
               <PlusCircle className="w-4 h-4" />
               <span className="truncate">Criar Nova Atividade</span>
@@ -102,7 +275,6 @@ export default function HistoryPage() {
           </Link>
         </div>
 
-        {/* Barra de Busca e Filtros */}
         <div className="mb-6 rounded-xl border border-gray-800 bg-gray-900 p-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="md:col-span-2">
@@ -117,37 +289,40 @@ export default function HistoryPage() {
                 />
               </label>
             </div>
-            {/* Botões de Filtro */}
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-3">
+              <FilterDropdown
+                title="Tipo"
+                options={DOCUMENT_TYPES}
+                filterState={filterType}
+                setFilterState={setFilterType}
+              />
+              <FilterDropdown
+                title="Nível"
+                options={DIFFICULTY_LEVELS}
+                filterState={filterLevel}
+                setFilterState={setFilterLevel}
+              />
               <Button
-                variant="outline"
-                className="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-700 bg-gray-800 px-3 text-sm font-medium text-gray-300 hover:bg-gray-700"
-              >
-                <span>Tipo</span>
-                <ChevronDown className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="outline"
-                className="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-700 bg-gray-800 px-3 text-sm font-medium text-gray-300 hover:bg-gray-700"
-              >
-                <span>Nível</span>
-                <ChevronDown className="w-4 h-4" />
-              </Button>
-              <Button
+                onClick={() =>
+                  setSortOrder(sortOrder === "desc" ? "asc" : "desc")
+                }
                 variant="outline"
                 className="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-700 bg-gray-800 px-3 text-sm font-medium text-gray-300 hover:bg-gray-700"
               >
                 <span>Data</span>
-                <ArrowUpDown className="w-4 h-4" />
+                <ChevronUp
+                  className={`w-4 h-4 transition-transform ${
+                    sortOrder === "asc" ? "rotate-180" : "rotate-0"
+                  }`}
+                />
               </Button>
             </div>
           </div>
         </div>
 
-        {/* Lista de Atividades */}
         <div className="space-y-4">
-          {activities.length > 0 ? (
-            activities.map((activity) => (
+          {paginatedActivities.length > 0 ? (
+            paginatedActivities.map((activity) => (
               <HistoryCard
                 key={activity.id}
                 id={activity.id}
@@ -159,50 +334,45 @@ export default function HistoryPage() {
             ))
           ) : (
             <p className="text-gray-400 text-center py-10">
-              Nenhuma atividade corresponde à sua busca.
+              {searchTerm || filterType !== "Todos" || filterLevel !== "Todos"
+                ? "Nenhum resultado encontrado para os filtros aplicados."
+                : "Você ainda não criou nenhuma atividade."}
             </p>
           )}
         </div>
 
-        <div className="mt-8 flex items-center justify-between">
-          <p className="text-sm text-gray-400">
-            Mostrando 1-{activities.length} de {TOTAL_RESULTS} resultados
-          </p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(currentPage - 1)}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-gray-400 hover:bg-gray-700"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            {[...Array(TOTAL_PAGES)].map((_, index) => (
+        {totalActivities > PAGE_SIZE && (
+          <div className="mt-8 flex items-center justify-between">
+            <p className="text-sm text-gray-400">
+              Mostrando {(currentPage - 1) * PAGE_SIZE + 1}-
+              {Math.min(currentPage * PAGE_SIZE, totalActivities)} de{" "}
+              {totalActivities} resultados
+            </p>
+            <div className="flex items-center gap-2">
               <Button
-                key={index}
-                variant={currentPage === index + 1 ? "default" : "outline"}
-                onClick={() => setCurrentPage(index + 1)}
-                className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium ${
-                  currentPage === index + 1
-                    ? "border-primary bg-primary text-white font-bold"
-                    : "border-gray-700 bg-gray-800 text-gray-300 hover:bg-gray-700"
-                }`}
+                variant="outline"
+                size="icon"
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-gray-400 hover:bg-gray-700"
               >
-                {index + 1}
+                <ChevronLeft className="w-5 h-5" />
               </Button>
-            ))}
-            <Button
-              variant="outline"
-              size="icon"
-              disabled={currentPage === TOTAL_PAGES}
-              onClick={() => setCurrentPage(currentPage + 1)}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-gray-400 hover:bg-gray-700"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </Button>
+
+              {renderPaginationButtons()}
+
+              <Button
+                variant="outline"
+                size="icon"
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-gray-400 hover:bg-gray-700"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </AuthGuard>
   );
