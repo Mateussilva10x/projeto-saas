@@ -46,22 +46,22 @@ const ThemesInput: React.FC<ThemesInputProps> = ({ topics, setTopics }) => {
   return (
     <div className="flex flex-col gap-2">
       <label
-        className="text-gray-300 text-base font-medium leading-normal"
+        className="text-gray-900 dark:text-white text-base font-medium leading-normal"
         htmlFor="themes-input"
       >
         Temas do Documento
       </label>
 
-      <div className="flex flex-col gap-2 rounded-lg border border-gray-900-dark bg-background-dark p-2 focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary">
+      <div className="flex flex-col gap-2 rounded-lg border border-gray-900-dark bg-background p-2 focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary">
         <div className="flex flex-wrap gap-2">
           {topics.map((topic) => (
             <div
               key={topic}
-              className="flex items-center gap-1 bg-primary/20 text-blue-300 rounded-full px-3 py-1 text-sm font-medium"
+              className="flex items-center gap-1 bg-primary/20 text-primary-800 dark:bg-primary/30 dark:text-primary-200 rounded-full px-3 py-1 text-sm font-medium"
             >
               <span>{topic}</span>
               <button
-                className="text-blue-200 hover:text-white"
+                className="dark:text-blue-200 hover:text-white"
                 type="button"
                 onClick={() => handleRemoveTopic(topic)}
               >

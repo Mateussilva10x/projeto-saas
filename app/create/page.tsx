@@ -21,10 +21,7 @@ export default function CreateActivityPage() {
   const [level, setLevel] = useState("Fundamental 2");
   const [series, setSeries] = useState("6º Ano");
   const [type, setType] = useState("Atividade");
-  const [topics, setTopics] = useState([
-    "Revolução Francesa",
-    "Equações de 2º Grau",
-  ]);
+  const [topics, setTopics] = useState<string[]>([]);
 
   const { setLoading, setActivity } = useActivityStore();
   const isLoading = useActivityStore((state) => state.isLoading);
@@ -34,7 +31,7 @@ export default function CreateActivityPage() {
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const topicsArray = topics.filter((t) => t.trim() !== "");
+    const topicsArray = topics?.filter((t: string) => t.trim() !== "");
 
     if (!level || !series || !type || topicsArray.length === 0) {
       toast.error("Campos obrigatórios", {
@@ -91,26 +88,26 @@ export default function CreateActivityPage() {
       <div className="layout-content-container flex flex-col w-full max-w-2xl flex-1 mx-auto">
         <div className="flex flex-col gap-8">
           <div className="flex flex-wrap justify-between gap-3 text-center">
-            <p className="text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em] w-full">
+            <p className="text-gray-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em] w-full">
               Criar Nova Atividade
             </p>
-            <p className="text-gray-400 w-full">
+            <p className="text-gray-500 dark:text-gray-400 w-full">
               Preencha os campos abaixo para gerar um documento personalizado.
             </p>
           </div>
 
-          <div className="bg-gray-800-dark p-6 sm:p-8 rounded-xl shadow-sm border border-gray-900-dark relative z-10">
+          <div className="bg-white dark:bg-gray-900/50 p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
             <form onSubmit={handleGenerate} className="flex flex-col gap-8">
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <label className="flex flex-col w-full">
-                  <p className="text-gray-300 text-base font-medium leading-normal pb-2">
+                  <p className="text-gray-900 dark:text-white text-base font-medium leading-normal pb-2">
                     Nível Escolar
                   </p>
                   <Select onValueChange={setLevel} value={level}>
-                    <SelectTrigger className="h-12 border border-gray-900-dark bg-background-dark focus:border-primary">
+                    <SelectTrigger className="form-select appearance-none w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-gray-700 bg-background dark:bg-gray-800/50 focus:border-primary h-12 placeholder:text-gray-400 px-4 text-base font-normal leading-normal">
                       <SelectValue placeholder="Selecione o nível" />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-900-dark z-50">
+                    <SelectContent className="dark:bg-gray-800 border-gray-900-dark z-50">
                       <SelectItem value="Fundamental 1">
                         Fundamental 1
                       </SelectItem>
@@ -123,14 +120,14 @@ export default function CreateActivityPage() {
                 </label>
 
                 <label className="flex flex-col w-full">
-                  <p className="text-gray-300 text-base font-medium leading-normal pb-2">
+                  <p className="text-gray-900 dark:text-white text-base font-medium leading-normal pb-2">
                     Série
                   </p>
                   <Select onValueChange={setSeries} value={series}>
-                    <SelectTrigger className="h-12 border border-gray-900-dark bg-background-dark focus:border-primary">
+                    <SelectTrigger className="form-select appearance-none w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-gray-700 bg-background dark:bg-gray-800/50 focus:border-primary h-12 placeholder:text-gray-400 px-4 text-base font-normal leading-normal">
                       <SelectValue placeholder="Selecione a série" />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-900-dark z-50">
+                    <SelectContent className="dark:bg-gray-800 border-gray-900-dark z-50">
                       <SelectItem value="6º Ano">6º Ano</SelectItem>
                       <SelectItem value="7º Ano">7º Ano</SelectItem>
                       <SelectItem value="8º Ano">8º Ano</SelectItem>
@@ -141,14 +138,14 @@ export default function CreateActivityPage() {
               </div>
 
               <label className="flex flex-col w-full">
-                <p className="text-gray-300 text-base font-medium leading-normal pb-2">
+                <p className="text-gray-900 dark:text-white text-base font-medium leading-normal pb-2">
                   Tipo de Documento
                 </p>
                 <Select onValueChange={setType} value={type}>
-                  <SelectTrigger className="h-12 border border-gray-900-dark bg-background-dark focus:border-primary">
+                  <SelectTrigger className="form-select appearance-none w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-gray-700 bg-background dark:bg-gray-800/50 focus:border-primary h-12 placeholder:text-gray-400 px-4 text-base font-normal leading-normal">
                     <SelectValue placeholder="Selecione o tipo" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-900-dark z-50">
+                  <SelectContent className="dark:bg-gray-800 border-gray-900-dark z-50">
                     <SelectItem value="Atividade">Atividade</SelectItem>
                     <SelectItem value="Prova">Prova</SelectItem>
                     <SelectItem value="Simulado">Simulado</SelectItem>

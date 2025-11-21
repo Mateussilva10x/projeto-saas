@@ -19,7 +19,6 @@ import {
   Search,
   PlusCircle,
   ChevronDown,
-  ChevronUp,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -42,10 +41,6 @@ const DIFFICULTY_LEVELS = [
   "Fundamental 1",
   "Fundamental 2",
   "Ensino Médio",
-  "6º Ano",
-  "7º Ano",
-  "8º Ano",
-  "9º Ano",
 ];
 
 interface FilterDropdownProps {
@@ -66,7 +61,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-700 bg-gray-800 px-3 text-sm font-medium text-gray-300 hover:bg-gray-700"
+          className="flex h-10 shrink-0 items-center cursor-pointer justify-center gap-x-2 rounded-lg border border-gray-200 bg-background-light px-3 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-background-dark dark:text-gray-300 dark:hover:bg-gray-800"
         >
           <span>{filterState !== "Todos" ? filterState : title}</span>
           <ChevronDown className="w-4 h-4" />
@@ -74,7 +69,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="start"
-        className="bg-gray-800 border-gray-700"
+        className="dark:bg-gray-800 dark:border-gray-700"
       >
         {options.map((option) => (
           <DropdownMenuItem
@@ -264,24 +259,24 @@ export default function HistoryPage() {
     <AuthGuard>
       <div className="container mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
         <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center mb-8">
-          <h2 className="text-3xl font-black tracking-tight text-gray-100 dark:text-gray-100">
+          <h2 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">
             Meu Histórico de Atividades
           </h2>
           <Link href="/create">
-            <Button className="flex min-w-[84px] items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-primary/90">
+            <Button className="flex min-w-[84px] items-center cursor-pointer justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-primary/90">
               <PlusCircle className="w-4 h-4" />
               <span className="truncate">Criar Nova Atividade</span>
             </Button>
           </Link>
         </div>
 
-        <div className="mb-6 rounded-xl border border-gray-800 bg-gray-900 p-4">
+        <div className="mb-6 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900/50">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="md:col-span-2">
               <label className="relative flex w-full items-center">
                 <Search className="absolute left-3 text-gray-500 w-5 h-5" />
                 <input
-                  className="w-full rounded-lg border-gray-700 bg-gray-800 py-2 pl-10 pr-4 text-gray-200 placeholder-gray-500 focus:border-primary focus:ring-primary"
+                  className="w-full rounded-lg border-gray-200 bg-background-light py-2 pl-10 pr-4 text-gray-800 placeholder-gray-400 focus:border-primary focus:ring-primary dark:border-gray-700 dark:bg-background-dark dark:text-gray-200"
                   placeholder="Buscar por título..."
                   type="text"
                   value={searchTerm}
@@ -289,7 +284,7 @@ export default function HistoryPage() {
                 />
               </label>
             </div>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-3">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 md:grid-cols-2">
               <FilterDropdown
                 title="Tipo"
                 options={DOCUMENT_TYPES}
@@ -302,20 +297,6 @@ export default function HistoryPage() {
                 filterState={filterLevel}
                 setFilterState={setFilterLevel}
               />
-              <Button
-                onClick={() =>
-                  setSortOrder(sortOrder === "desc" ? "asc" : "desc")
-                }
-                variant="outline"
-                className="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-700 bg-gray-800 px-3 text-sm font-medium text-gray-300 hover:bg-gray-700"
-              >
-                <span>Data</span>
-                <ChevronUp
-                  className={`w-4 h-4 transition-transform ${
-                    sortOrder === "asc" ? "rotate-180" : "rotate-0"
-                  }`}
-                />
-              </Button>
             </div>
           </div>
         </div>
@@ -354,7 +335,7 @@ export default function HistoryPage() {
                 size="icon"
                 disabled={currentPage === 1}
                 onClick={() => handlePageChange(currentPage - 1)}
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-gray-400 hover:bg-gray-700"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border dark:border-gray-700 dark:bg-gray-800 text-gray-400 hover:bg-gray-700"
               >
                 <ChevronLeft className="w-5 h-5" />
               </Button>
@@ -366,7 +347,7 @@ export default function HistoryPage() {
                 size="icon"
                 disabled={currentPage === totalPages}
                 onClick={() => handlePageChange(currentPage + 1)}
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-gray-400 hover:bg-gray-700"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border dark:border-gray-700 dark:bg-gray-800 text-gray-400 hover:bg-gray-700"
               >
                 <ChevronRight className="w-5 h-5" />
               </Button>

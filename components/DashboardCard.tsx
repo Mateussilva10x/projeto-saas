@@ -29,7 +29,7 @@ export default function DashboardCard({
 
   const buttonClasses = isPrimary
     ? "bg-primary text-white hover:bg-primary/90 focus:ring-primary/30 dark:text-slate-900 dark:font-bold"
-    : "bg-primary/20 text-primary dark:bg-secondary/10 dark:text-white hover:bg-secondary/50 focus:ring-primary/30";
+    : "bg-primary/20 text-primary hover:bg-primary/30 dark:bg-secondary/10 dark:text-white dark:hover:bg-secondary/50 focus:ring-primary/30";
 
   return (
     <div className="flex flex-col gap-4 p-6 bg-white dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800 transition-shadow hover:shadow-lg dark:hover:border-primary">

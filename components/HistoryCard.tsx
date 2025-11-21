@@ -4,17 +4,34 @@ import { MoreVertical, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
 
 const tagColors = {
-  Prova: { bg: "bg-blue-900/50", text: "text-blue-300" },
-  Simulado: { bg: "bg-indigo-900/50", text: "text-indigo-300" },
-  Exercício: { bg: "bg-green-900/50", text: "text-green-300" },
-  Médio: { bg: "bg-yellow-900/50", text: "text-yellow-300" },
-  Difícil: { bg: "bg-red-900/50", text: "text-red-300" },
-  Fácil: { bg: "bg-green-900/50", text: "text-green-300" },
-
-  "N/A": { bg: "bg-gray-700/50", text: "text-gray-400" },
-  "Fundamental 1": { bg: "bg-yellow-900/50", text: "text-yellow-300" },
-  "Fundamental 2": { bg: "bg-yellow-900/50", text: "text-yellow-300" },
-  "Ensino Médio": { bg: "bg-yellow-900/50", text: "text-yellow-300" },
+  Prova: {
+    bg: "bg-blue-100 dark:bg-blue-900/50",
+    text: "text-blue-800 dark:text-blue-300",
+  },
+  Simulado: {
+    bg: "dark:bg-indigo-900/50",
+    text: "text-indigo-800 dark:text-indigo-300",
+  },
+  Atividade: {
+    bg: "dark:bg-green-900/50",
+    text: "text-green-800 dark:text-green-300",
+  },
+  "N/A": {
+    bg: "bg-gray-100 dark:bg-gray-700/50",
+    text: "text-gray-800 dark:text-gray-400",
+  },
+  "Fundamental I": {
+    bg: "bg-red-100 dark:bg-red-900/50",
+    text: "text-red-800 dark:text-red-300",
+  },
+  "Fundamental II": {
+    bg: "bg-yellow-100 dark:bg-yellow-900/50",
+    text: "text-yellow-800 dark:text-yellow-300",
+  },
+  "Ensino Médio": {
+    bg: "bg-green-100 dark:bg-green-900/50",
+    text: "text-green-800 dark:text-green-300",
+  },
 };
 
 interface HistoryCardProps {
@@ -51,10 +68,14 @@ export default function HistoryCard({
     year: "numeric",
   });
 
+  console.log(level);
+
   return (
-    <div className="group flex flex-col items-start justify-between gap-4 rounded-xl border border-gray-800 bg-gray-900 p-5 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 md:flex-row md:items-center">
+    <div className="group flex flex-col items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-5 transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900/50 dark:hover:border-primary/50 md:flex-row md:items-center">
       <div className="flex-1">
-        <h3 className="text-lg font-bold text-gray-100">{title}</h3>
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+          {title}
+        </h3>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <Tag value={type} />
 
@@ -65,13 +86,13 @@ export default function HistoryCard({
       </div>
 
       <div className="flex w-full items-center justify-start gap-2 md:w-auto">
-        <Link href={`/atividade/${id}`}>
-          <Button className="flex h-10 items-center justify-center gap-2 rounded-lg border border-gray-700 bg-transparent px-4 text-sm font-semibold text-gray-300 hover:bg-gray-800">
+        <Link href={`/activity/${id}`}>
+          <Button className="flex h-10 items-center cursor-pointer justify-center gap-2 rounded-lg border border-gray-200 bg-transparent px-4 text-sm font-semibold text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">
             Ver Detalhes
             <ArrowRight className="w-4 h-4 ml-1" />
           </Button>
         </Link>
-        <button className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-700 bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white">
+        <button className="flex h-10 w-10 items-center justify-center cursor-pointer rounded-lg border border-gray-200 bg-transparent text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800">
           <MoreVertical className="w-5 h-5" />
         </button>
       </div>
