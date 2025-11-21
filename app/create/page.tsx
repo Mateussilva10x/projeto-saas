@@ -99,7 +99,7 @@ export default function CreateActivityPage() {
             </p>
           </div>
 
-          <div className="bg-gray-800-dark p-6 sm:p-8 rounded-xl shadow-sm border border-gray-900-dark">
+          <div className="bg-gray-800-dark p-6 sm:p-8 rounded-xl shadow-sm border border-gray-900-dark relative z-10">
             <form onSubmit={handleGenerate} className="flex flex-col gap-8">
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <label className="flex flex-col w-full">
@@ -110,7 +110,7 @@ export default function CreateActivityPage() {
                     <SelectTrigger className="h-12 border border-gray-900-dark bg-background-dark focus:border-primary">
                       <SelectValue placeholder="Selecione o nível" />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800-dark border-gray-900-dark">
+                    <SelectContent className="bg-gray-800 border-gray-900-dark z-50">
                       <SelectItem value="Fundamental 1">
                         Fundamental 1
                       </SelectItem>
@@ -130,7 +130,7 @@ export default function CreateActivityPage() {
                     <SelectTrigger className="h-12 border border-gray-900-dark bg-background-dark focus:border-primary">
                       <SelectValue placeholder="Selecione a série" />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800-dark border-gray-900-dark">
+                    <SelectContent className="bg-gray-800 border-gray-900-dark z-50">
                       <SelectItem value="6º Ano">6º Ano</SelectItem>
                       <SelectItem value="7º Ano">7º Ano</SelectItem>
                       <SelectItem value="8º Ano">8º Ano</SelectItem>
@@ -148,7 +148,7 @@ export default function CreateActivityPage() {
                   <SelectTrigger className="h-12 border border-gray-900-dark bg-background-dark focus:border-primary">
                     <SelectValue placeholder="Selecione o tipo" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800-dark border-gray-900-dark">
+                  <SelectContent className="bg-gray-800 border-gray-900-dark z-50">
                     <SelectItem value="Atividade">Atividade</SelectItem>
                     <SelectItem value="Prova">Prova</SelectItem>
                     <SelectItem value="Simulado">Simulado</SelectItem>
