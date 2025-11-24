@@ -11,15 +11,10 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import ActivityPDF from "@/components/pdf/ActivityPDF";
-import { PDFDownloadLink } from "@react-pdf/renderer";
 import {
-  ArrowLeft,
-  Save,
   FileText,
   Edit2,
   CheckCircle,
-  Circle,
 } from "lucide-react";
 import { toast } from "sonner";
 import {

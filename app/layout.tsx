@@ -9,7 +9,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "SaaS Gerador de Atividades",
+  title: "Lume.IA",
   description: "Gere atividades com IA",
 };
 
