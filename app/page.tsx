@@ -50,7 +50,7 @@ const RecentActivityList = () => {
             id: doc.id,
             title: data.title,
             created: `${day} de ${month}`,
-            link: `/atividade/${doc.id}`,
+            link: `/activity/${doc.id}`,
           };
         });
 
