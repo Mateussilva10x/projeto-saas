@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MoreVertical, ArrowRight } from "lucide-react";
+import { MoreVertical, ArrowRight, CheckSquare } from "lucide-react";
 import { Button } from "./ui/button";
 
 const tagColors = {
@@ -85,15 +85,21 @@ export default function HistoryCard({
       </div>
 
       <div className="flex w-full items-center justify-start gap-2 md:w-auto">
+        <Link href={`/correct/${id}`}>
+          <Button
+            variant="secondary"
+            className="flex h-10 items-center justify-center gap-2 rounded-lg border border-gray-700 bg-slate-800 px-4 text-sm font-semibold text-blue-400 hover:bg-slate-700 hover:text-blue-300"
+          >
+            <CheckSquare className="w-4 h-4" />
+            Corrigir
+          </Button>
+        </Link>
         <Link href={`/activity/${id}`}>
           <Button className="flex h-10 items-center cursor-pointer justify-center gap-2 rounded-lg border border-gray-200 bg-transparent px-4 text-sm font-semibold text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">
             Ver Detalhes
             <ArrowRight className="w-4 h-4 ml-1" />
           </Button>
         </Link>
-        <button className="flex h-10 w-10 items-center justify-center cursor-pointer rounded-lg border border-gray-200 bg-transparent text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800">
-          <MoreVertical className="w-5 h-5" />
-        </button>
       </div>
     </div>
   );
