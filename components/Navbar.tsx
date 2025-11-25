@@ -30,6 +30,7 @@ const navItems = [
   { name: "Início", path: "/" },
   { name: "Minhas Atividades", path: "/history" },
   { name: "Criar Atividade", path: "/create" },
+  { name: "Importar Prova", path: "/import" },
 ];
 
 export default function Navbar() {
