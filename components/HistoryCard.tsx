@@ -1,6 +1,24 @@
+"use client";
 import Link from "next/link";
-import { MoreVertical, ArrowRight, CheckSquare } from "lucide-react";
+import { MoreVertical, ArrowRight, CheckSquare, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
+import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 
 const tagColors = {
   Prova: {
@@ -39,6 +57,7 @@ interface HistoryCardProps {
   type: string;
   level: string;
   createdAt: string;
+  onDelete: (id: string) => void;
 }
 
 const Tag = ({ value }: { value: string }) => {
@@ -60,7 +79,9 @@ export default function HistoryCard({
   type,
   level,
   createdAt,
+  onDelete,
 }: HistoryCardProps) {
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const date = new Date(createdAt).toLocaleDateString("pt-BR", {
     day: "2-digit",
     month: "numeric",
@@ -70,37 +91,80 @@ export default function HistoryCard({
   console.log(level);
 
   return (
-    <div className="group flex flex-col items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-5 transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900/50 dark:hover:border-primary/50 md:flex-row md:items-center">
-      <div className="flex-1">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-          {title}
-        </h3>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <Tag value={type} />
+    <>
+      <div className="group flex flex-col items-start justify-between gap-4 rounded-xl border border-gray-200 bg-white p-5 transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900/50 dark:hover:border-primary/50 md:flex-row md:items-center">
+        <div className="flex-1">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+            {title}
+          </h3>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <Tag value={type} />
 
-          <Tag value={level} />
+            <Tag value={level} />
 
-          <p className="text-sm text-gray-400">Criado em: {date}</p>
+            <p className="text-sm text-gray-400">Criado em: {date}</p>
+          </div>
+        </div>
+
+        <div className="flex w-full items-center justify-start gap-2 md:w-auto">
+          <Link href={`/correct/${id}`}>
+            <Button
+              variant="secondary"
+              className="flex h-10 items-center justify-center gap-2 rounded-lg border border-gray-700 bg-slate-800 px-4 text-sm font-semibold text-blue-400 hover:bg-slate-700 hover:text-blue-300"
+            >
+              <CheckSquare className="w-4 h-4" />
+              Corrigir
+            </Button>
+          </Link>
+          <Link href={`/activity/${id}`}>
+            <Button className="flex h-10 items-center cursor-pointer justify-center gap-2 rounded-lg border border-gray-200 bg-transparent px-4 text-sm font-semibold text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">
+              Ver Detalhes
+              <ArrowRight className="w-4 h-4 ml-1" />
+            </Button>
+          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-700 bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white transition-colors">
+                <MoreVertical className="w-5 h-5" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="bg-gray-900 border-gray-800"
+            >
+              <DropdownMenuItem
+                className="text-red-400 focus:text-red-300 focus:bg-red-900/20 cursor-pointer"
+                onClick={() => setIsAlertOpen(true)}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                <span>Excluir</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-
-      <div className="flex w-full items-center justify-start gap-2 md:w-auto">
-        <Link href={`/correct/${id}`}>
-          <Button
-            variant="secondary"
-            className="flex h-10 items-center justify-center gap-2 rounded-lg border border-gray-700 bg-slate-800 px-4 text-sm font-semibold text-blue-400 hover:bg-slate-700 hover:text-blue-300"
-          >
-            <CheckSquare className="w-4 h-4" />
-            Corrigir
-          </Button>
-        </Link>
-        <Link href={`/activity/${id}`}>
-          <Button className="flex h-10 items-center cursor-pointer justify-center gap-2 rounded-lg border border-gray-200 bg-transparent px-4 text-sm font-semibold text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">
-            Ver Detalhes
-            <ArrowRight className="w-4 h-4 ml-1" />
-          </Button>
-        </Link>
-      </div>
-    </div>
+      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent className="bg-gray-900 border-gray-800 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              Essa ação não pode ser desfeita. A atividade "{title}" será
+              permanentemente removida do seu histórico.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-transparent border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white">
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => onDelete(id)}
+              className="bg-red-600 hover:bg-red-700 text-white border-0"
+            >
+              Sim, excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

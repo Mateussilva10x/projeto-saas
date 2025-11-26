@@ -28,6 +28,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 type FetchedActivity = Omit<ActivityData, "createdAt"> & {
   createdAt: Timestamp;
@@ -130,6 +131,42 @@ export default function HistoryPage() {
       fetchHistory();
     }
   }, [user]);
+
+  const handleDeleteActivity = async (idToDelete: string) => {
+    if (!user) return;
+
+    try {
+      const previousActivities = [...allActivities];
+      setAllActivities((prev) =>
+        prev.filter((activity) => activity.id !== idToDelete)
+      );
+
+      const token = await user.getIdToken();
+      const response = await fetch(`/api/activity/${idToDelete}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        setAllActivities(previousActivities);
+        throw new Error("Falha ao excluir");
+      }
+
+      toast.success("Atividade excluída com sucesso.");
+
+      const remaining = previousActivities.length - 1;
+      const newTotalPages = Math.ceil(remaining / PAGE_SIZE);
+      if (currentPage > newTotalPages && newTotalPages > 0) {
+        setCurrentPage(newTotalPages);
+      }
+    } catch (error) {
+      toast.error("Erro ao excluir atividade", {
+        description: "Tente novamente mais tarde.",
+      });
+    }
+  };
 
   const filteredAndSortedActivities = useMemo(() => {
     let result = allActivities;
@@ -311,6 +348,7 @@ export default function HistoryPage() {
                 type={activity.type as any}
                 level={activity.level || "N/A"}
                 createdAt={activity.createdAt}
+                onDelete={handleDeleteActivity}
               />
             ))
           ) : (
