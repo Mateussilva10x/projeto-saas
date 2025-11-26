@@ -5,63 +5,70 @@ import { geminiModel } from "@/lib/gemini";
 import { ActivityData } from "@/store/useActivityStore";
 import { Timestamp } from "firebase-admin/firestore";
 
-const buildPrompt = (
-  level: string,
-  series: string,
-  type: string,
-  topics: string[]
-): string => {
+interface PromptParams {
+  level: string;
+  series: string;
+  type: string;
+  topics: string[];
+  difficulty: string;
+  totalQuestions: number;
+  objectiveCount: number;
+  discursiveCount: number;
+}
+
+const buildPrompt = ({
+  level,
+  series,
+  type,
+  topics,
+  difficulty,
+  totalQuestions,
+  objectiveCount,
+  discursiveCount,
+}: PromptParams): string => {
   const topicsList = topics.join(", ");
-  const numQuestions = type === "Prova" ? 10 : type === "Simulado" ? 20 : 5;
-  const mcCount = Math.floor(numQuestions * 0.6);
-  const disCount = numQuestions - mcCount;
 
   return `
-    Você é um assistente pedagógico especializado em criar avaliações e atividades
-    para o sistema educacional brasileiro, seguindo as diretrizes da BNCC.
+    Você é um assistente pedagógico especialista em criar avaliações escolares (BNCC).
 
-    Sua tarefa é gerar um documento JSON para uma ${type} destinada a alunos do ${series} do ${level}.
-
-    Regras Estritas de Geração:
-    1.  Nível de Dificuldade: Ajuste a complexidade e a linguagem para a **Série ${series} (${level})**.
-    2.  Temas: A ${type} deve cobrir **exclusivamente** os seguintes temas: ${topicsList}.
-    3.  Total de Questões: Gere exatamente ${numQuestions} questões.
-    4.  Tipos de Questão:
-        -   Gere ${mcCount} questões de múltipla escolha.
-        -   Gere ${disCount} questões discursivas.
-    5.  Formato de Saída: Retorne **APENAS** um objeto JSON válido, sem nenhum texto
-        ou markdown antes ou depois dele.
+    TAREFA: Gerar um arquivo JSON para uma ${type}.
     
+    CONFIGURAÇÕES DO DOCUMENTO:
+    - Público Alvo: ${series} do ${level}.
+    - Tópicos: ${topicsList}.
+    - Nível de Dificuldade Cognitiva: **${difficulty}**.
+    
+    ESTRUTURA DA PROVA (Rigoroso):
+    - Total de Questões: Exatamente **${totalQuestions}**.
+    - Quantidade de Múltipla Escolha: Exatamente **${objectiveCount}**.
+    - Quantidade Dissertativas: Exatamente **${discursiveCount}**.
+
+    REGRAS DE GERAÇÃO:
+    1. Se a dificuldade for "Difícil", use questões que exijam raciocínio crítico e síntese. Se "Fácil", foque em memorização e identificação.
+    2. Para Múltipla Escolha: Forneça 4 ou 5 alternativas.
+    3. Para Dissertativas: Forneça um gabarito esperado detalhado.
+    4. Formato de Saída: Retorne **APENAS** o JSON válido.
+
     Estrutura do JSON esperado:
     {
-      "title": "String (um título criativo para a ${type} sobre ${topicsList})",
+      "title": "Título Criativo da Atividade",
       "questions": [
+        
         {
           "type": "multiple_choice",
-          "question": "String (O enunciado da questão de múltipla escolha)",
-          "options": [
-            "String (Opção A)",
-            "String (Opção B)",
-            "String (Opção C)",
-            "String (Opção D)"
-          ]
+          "question": "Enunciado...",
+          "options": ["A)", "B)", "C)", "D)"]
         },
         {
           "type": "discursive",
-          "question": "String (O enunciado da questão discursiva)"
+          "question": "Enunciado..."
         }
-        
       ],
       "answerKey": [
         {
-          "question": "String (Repetir o enunciado da questão 1)",
-          "answer": "String (A resposta correta. Para múltipla escolha, coloque o texto da opção correta, ex: 'Opção C')"
-        },
-        {
-          "question": "String (Repetir o enunciado da questão 2)",
-          "answer": "String (A resposta esperada para a questão discursiva)"
+          "question": "Repita o enunciado",
+          "answer": "Resposta correta ou letra"
         }
-        
       ]
     }
   `;
@@ -70,26 +77,45 @@ const buildPrompt = (
 export async function POST(request: Request) {
   try {
     const authorization = request.headers.get("Authorization");
-    if (!authorization) {
+    if (!authorization)
       return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
-    }
     const token = authorization.split("Bearer ")[1];
     const decodedToken = await authAdmin.verifyIdToken(token);
     const userId = decodedToken.uid;
 
-    const { level, series, type, topics } = await request.json();
-    if (!level || !series || !type || !topics || topics.length === 0) {
+    const {
+      level,
+      series,
+      type,
+      topics,
+      difficulty,
+      totalQuestions,
+      objectiveCount,
+      discursiveCount,
+    } = await request.json();
+
+    if (!level || !series || !type || !topics) {
       return NextResponse.json(
-        { message: "Campos faltando: nível, série, tipo ou temas." },
+        { message: "Campos obrigatórios faltando." },
         { status: 400 }
       );
     }
 
-    const prompt = buildPrompt(level, series, type, topics);
+    const prompt = buildPrompt({
+      level,
+      series,
+      type,
+      topics,
+      difficulty,
+      totalQuestions,
+      objectiveCount,
+      discursiveCount,
+    });
+
     const result = await geminiModel.generateContent(prompt);
     const responseText = result.response.text();
-
-    const generatedData = JSON.parse(responseText);
+    const cleanJson = responseText.replace(/```json|```/g, "").trim();
+    const generatedData = JSON.parse(cleanJson);
 
     const historyRef = dbAdmin
       .collection("users")
@@ -103,6 +129,9 @@ export async function POST(request: Request) {
       series,
       type,
       topics,
+
+      difficulty,
+      metadata: { totalQuestions, objectiveCount, discursiveCount },
       createdAt: Timestamp.now(),
     };
 
@@ -116,9 +145,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json(finalActivity, { status: 200 });
   } catch (error: any) {
-    console.error("Erro em /api/generate:", error);
+    console.error("Erro na geração:", error);
     return NextResponse.json(
-      { message: "Erro interno do servidor", error: error.message },
+      { message: "Erro ao gerar atividade", details: error.message },
       { status: 500 }
     );
   }
