@@ -110,7 +110,7 @@ export default function HistoryCard({
           <Link href={`/correct/${id}`}>
             <Button
               variant="secondary"
-              className="flex h-10 items-center justify-center gap-2 rounded-lg border border-gray-700 bg-slate-800 px-4 text-sm font-semibold text-blue-400 hover:bg-slate-700 hover:text-blue-300"
+              className="flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white  text-primary hover:bg-slate-50 hover:text-blue-700 dark:border-gray-700 dark:bg-slate-800 px-4 text-sm font-semibold dark:text-blue-400 dark:hover:bg-slate-700 dark:hover:text-blue-300"
             >
               <CheckSquare className="w-4 h-4" />
               Corrigir
@@ -124,19 +124,19 @@ export default function HistoryCard({
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-700 bg-transparent text-gray-400 hover:bg-gray-800 hover:text-white transition-colors">
+              <button className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-transparent  text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors">
                 <MoreVertical className="w-5 h-5" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="bg-gray-900 border-gray-800"
+              className="dark:bg-gray-900 dark:border-gray-800"
             >
               <DropdownMenuItem
-                className="text-red-400 focus:text-red-300 focus:bg-red-900/20 cursor-pointer"
+                className="text-red-600 focus:text-red-700 focus:bg-red-100/80 dark:text-red-400 dark:focus:text-red-300 dark:focus:bg-red-900/20 cursor-pointer"
                 onClick={() => setIsAlertOpen(true)}
               >
-                <Trash2 className="mr-2 h-4 w-4" />
+                <Trash2 className="mr-2 h-4 w-4 text-red-600" />
                 <span>Excluir</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -144,7 +144,7 @@ export default function HistoryCard({
         </div>
       </div>
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-        <AlertDialogContent className="bg-gray-900 border-gray-800 text-white">
+        <AlertDialogContent className="dark:bg-gray-900 dark:border-gray-800 dark:text-white">
           <AlertDialogHeader>
             <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-400">
@@ -153,7 +153,7 @@ export default function HistoryCard({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-transparent border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white">
+            <AlertDialogCancel className="bg-transparent dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white">
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
