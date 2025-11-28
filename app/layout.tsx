@@ -10,7 +10,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Lume.IA",
+  title: "Profex.AI",
   description: "Gere atividades com IA",
 };
 

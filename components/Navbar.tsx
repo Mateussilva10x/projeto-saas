@@ -53,7 +53,7 @@ export default function Navbar() {
       <div className="flex items-center gap-4 text-slate-900 dark:text-white">
         <AppLogo />
         <h1 className="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">
-          Lume.AI
+          Profex.AI
         </h1>
       </div>
 
