@@ -89,7 +89,7 @@ export default function CreateActivityPage() {
       const activityData: ActivityData = await response.json();
       setActivity(activityData);
       toast.success("Documento gerado com sucesso!");
-      router.push(`/atividade/${activityData.id}`);
+      router.push(`/activity/${activityData.id}`);
     } catch (error: any) {
       setLoading(false);
       toast.error("Erro na Geração", { description: error.message });
