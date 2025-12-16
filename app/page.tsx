@@ -22,28 +22,6 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-slate-950">
-      <header className="px-4 lg:px-6 h-16 flex items-center border-b border-slate-200 dark:border-slate-800 fixed w-full bg-white/80 dark:bg-slate-950/80 backdrop-blur-md z-50">
-        <Link className="flex items-center justify-center gap-2" href="#">
-          <div className="bg-primary/10 p-2 rounded-lg">
-            <Sparkles className="h-6 w-6 text-primary" />
-          </div>
-          <span className="font-bold text-xl text-slate-900 dark:text-white">
-            Profex.AI
-          </span>
-        </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link
-            className="text-sm font-medium hover:underline underline-offset-4 flex items-center"
-            href="/login"
-          >
-            <Button variant="ghost">Entrar</Button>
-          </Link>
-          <Link href="/login">
-            <Button>Criar Conta</Button>
-          </Link>
-        </nav>
-      </header>
-
       <main className="flex-1 pt-16">
         <section className="w-full py-20 md:py-32 lg:py-40 flex flex-col items-center text-center px-4">
           <div className="container px-4 md:px-6 space-y-8">

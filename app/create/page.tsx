@@ -17,6 +17,27 @@ import {
 } from "@/components/ui/select";
 import ThemesInput from "@/components/ThemesInput";
 import { Input } from "@/components/ui/input";
+import { PLAN_LIMITS, PlanType } from "@/config/plans";
+import { db } from "@/lib/firebase";
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getCountFromServer,
+  Timestamp,
+} from "firebase/firestore";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+import Link from "next/link";
 
 export default function CreateActivityPage() {
   const [level, setLevel] = useState("Fundamental 2");
@@ -27,11 +48,53 @@ export default function CreateActivityPage() {
   const [totalQuestions, setTotalQuestions] = useState(5);
   const [objectiveCount, setObjectiveCount] = useState(3);
   const [discursiveCount, setDiscursiveCount] = useState(2);
+  const [usageCount, setUsageCount] = useState(0);
+  const [userPlan, setUserPlan] = useState<PlanType>("free");
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const { setLoading, setActivity } = useActivityStore();
   const isLoading = useActivityStore((state) => state.isLoading);
   const router = useRouter();
   const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+
+    const checkUsageAndPlan = async () => {
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        let currentPlan: PlanType = "free";
+
+        if (userDocSnap.exists()) {
+          const data = userDocSnap.data();
+
+          if (
+            data.plan &&
+            ["free", "professor", "expert"].includes(data.plan)
+          ) {
+            currentPlan = data.plan as PlanType;
+          }
+        }
+        setUserPlan(currentPlan);
+
+        const now = new Date();
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+        const historyRef = collection(db, "users", user.uid, "history");
+        const q = query(
+          historyRef,
+          where("createdAt", ">=", Timestamp.fromDate(firstDay))
+        );
+        const snapshot = await getCountFromServer(q);
+        setUsageCount(snapshot.data().count);
+      } catch (error) {
+        console.error("Erro ao verificar plano:", error);
+      }
+    };
+
+    checkUsageAndPlan();
+  }, [user]);
 
   useEffect(() => {
     if (totalQuestions >= 0) {
@@ -44,6 +107,13 @@ export default function CreateActivityPage() {
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const limits = PLAN_LIMITS[userPlan];
+
+    if (usageCount >= limits.maxActivitiesPerMonth) {
+      setShowUpgradeModal(true);
+      return;
+    }
 
     const topicsArray = topics.filter((t) => t.trim() !== "");
 
@@ -268,6 +338,34 @@ export default function CreateActivityPage() {
           </div>
         </div>
       </div>
+      <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Limite Atingido! 🚀</DialogTitle>
+            <DialogDescription>
+              Você está no plano <strong>{PLAN_LIMITS[userPlan].label}</strong>{" "}
+              e atingiu seu limite de
+              {PLAN_LIMITS[userPlan].maxActivitiesPerMonth} atividades este mês.
+              <br />
+              <br />
+              Para continuar criando, faça um upgrade do seu plano.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowUpgradeModal(false)}
+            >
+              Fechar
+            </Button>
+            <Link href="/" className="w-full sm:w-auto">
+              <Button className="w-full bg-primary font-bold">
+                Ver Planos
+              </Button>
+            </Link>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AuthGuard>
   );
 }

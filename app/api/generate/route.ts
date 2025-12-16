@@ -4,6 +4,7 @@ import { authAdmin, dbAdmin } from "@/lib/firebaseAdmin";
 import { geminiModel } from "@/lib/gemini";
 import { ActivityData } from "@/store/useActivityStore";
 import { Timestamp } from "firebase-admin/firestore";
+import { PlanType, PLAN_LIMITS } from "@/config/plans";
 
 interface PromptParams {
   level: string;
@@ -82,6 +83,22 @@ export async function POST(request: Request) {
     const token = authorization.split("Bearer ")[1];
     const decodedToken = await authAdmin.verifyIdToken(token);
     const userId = decodedToken.uid;
+    const userDoc = await dbAdmin.collection("users").doc(userId).get();
+    const userData = userDoc.data();
+    const userPlan: PlanType = (userData?.plan as PlanType) || "free";
+    const limits = PLAN_LIMITS[userPlan];
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const historyRef = dbAdmin
+      .collection("users")
+      .doc(userId)
+      .collection("history");
+    const snapshot = await historyRef
+      .where("createdAt", ">=", firstDay)
+      .count()
+      .get();
+    const usageCount = snapshot.data().count;
 
     const {
       level,
@@ -93,6 +110,13 @@ export async function POST(request: Request) {
       objectiveCount,
       discursiveCount,
     } = await request.json();
+
+    if (usageCount >= limits.maxActivitiesPerMonth) {
+      return NextResponse.json(
+        { message: `Limite do plano ${limits.label} atingido. Faça upgrade.` },
+        { status: 403 }
+      );
+    }
 
     if (!level || !series || !type || !topics) {
       return NextResponse.json(
@@ -116,11 +140,6 @@ export async function POST(request: Request) {
     const responseText = result.response.text();
     const cleanJson = responseText.replace(/```json|```/g, "").trim();
     const generatedData = JSON.parse(cleanJson);
-
-    const historyRef = dbAdmin
-      .collection("users")
-      .doc(userId)
-      .collection("history");
     const newActivityRef = historyRef.doc();
 
     const activityToSave: Omit<ActivityData, "id"> = {
