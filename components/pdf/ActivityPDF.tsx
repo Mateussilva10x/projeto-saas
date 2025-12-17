@@ -165,11 +165,17 @@ const ActivityPDF = ({ activity, settings }: Props) => {
             </Text>
             {q.type === "multiple_choice" && (
               <View style={styles.optionsList}>
-                {q.options?.map((opt, i) => (
-                  <Text key={i} style={styles.option}>
-                    {String.fromCharCode(97 + i)}) {opt}
-                  </Text>
-                ))}
+                {q.options?.map((opt, i) => {
+                  const cleanOpt = opt
+                    .replace(/^[a-zA-Z0-9][).:-]\s*/, "")
+                    .trim();
+
+                  return (
+                    <Text key={i} style={styles.option}>
+                      {String.fromCharCode(97 + i)}) {cleanOpt}
+                    </Text>
+                  );
+                })}
               </View>
             )}
             {q.type === "discursive" && <View style={styles.discursiveLine} />}
