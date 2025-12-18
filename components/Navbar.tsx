@@ -27,7 +27,7 @@ const AppLogo = () => (
 );
 
 const navItems = [
-  { name: "Início", path: "/" },
+  { name: "Início", path: "/dashboard" },
   { name: "Minhas Atividades", path: "/history" },
   { name: "Criar Atividade", path: "/create" },
   { name: "Importar Prova", path: "/import" },

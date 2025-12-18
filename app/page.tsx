@@ -4,9 +4,20 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { ArrowRight, CheckCircle2, FileText, Sparkles } from "lucide-react";
 import PricingSection from "@/components/landing/PrincingSection";
+import Autoplay from "embla-carousel-autoplay";
+import banner1 from "../assets/images/carousel1.jpeg";
+import banner2 from "../assets/images/carousel2.jpeg";
 
 export default function LandingPage() {
   const { user, loading } = useAuth();
@@ -14,7 +25,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     if (!loading && user) {
-      router.push("/history");
+      router.push("/dashboard");
     }
   }, [user, loading, router]);
 
@@ -30,7 +41,7 @@ export default function LandingPage() {
                 Crie e Corrija Provas com IA em Segundos
               </h1>
               <p className="mx-auto max-w-[700px] text-slate-500 md:text-xl dark:text-slate-400 leading-relaxed">
-                Pare de levar trabalho para casa. O Lume gera atividades
+                Pare de levar trabalho para casa. O Profex.AI gera atividades
                 alinhadas à BNCC e corrige provas automaticamente usando apenas
                 a câmera do celular.
               </p>
@@ -48,12 +59,32 @@ export default function LandingPage() {
               </Link>
             </div>
 
-            <div className="mt-12 p-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xl max-w-4xl mx-auto rotate-1 hover:rotate-0 transition-transform duration-500">
-              <div className="aspect-video bg-white dark:bg-slate-950 rounded-lg flex items-center justify-center text-slate-300">
-                <span className="flex items-center gap-2">
-                  <FileText className="w-12 h-12" />
-                  (Aqui vai um print ou vídeo da tela do app)
-                </span>
+            <div className="mt-12 p-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xl max-w-4xl mx-auto ">
+              <div className=" bg-white dark:bg-slate-950 rounded-lg flex items-center justify-center text-slate-300">
+                <Carousel className="flex items-center gap-2">
+                  <CarouselContent>
+                    <CarouselItem>
+                      <Image
+                        src={banner1}
+                        width={600}
+                        height={200}
+                        alt="Banner 1"
+                        className="w-full object-cover"
+                      />
+                    </CarouselItem>
+                    <CarouselItem>
+                      <Image
+                        src={banner2}
+                        width={600}
+                        height={200}
+                        alt="Banner 1"
+                        className="w-full object-cover"
+                      />
+                    </CarouselItem>
+                  </CarouselContent>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </Carousel>
               </div>
             </div>
           </div>
