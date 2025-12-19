@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/carousel";
 import { ArrowRight, CheckCircle2, FileText, Sparkles } from "lucide-react";
 import PricingSection from "@/components/landing/PrincingSection";
-import Autoplay from "embla-carousel-autoplay";
 import banner1 from "../assets/images/carousel1.jpeg";
 import banner2 from "../assets/images/carousel2.jpeg";
 
